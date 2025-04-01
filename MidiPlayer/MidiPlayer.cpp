@@ -48,9 +48,6 @@ std::unordered_map<int, std::pair<char, char>> scanCodeMap = {
 	{0x39, {' ', ' '}}, {0x1C, {'\n', '\n'}},
 };
 
-InterceptionContext context;
-InterceptionDevice keyboard;
-
 std::unordered_map<int, char> notetokey = {
 	{36, '1'}, {37, '!'}, {38, '2'}, {39, '@'}, {40, '3'},
 	{41, '4'}, {42, '$'}, {43, '5'}, {44, '%'}, {45, '6'},
@@ -66,6 +63,9 @@ std::unordered_map<int, char> notetokey = {
 	{91, 'v'}, {92, 'V'}, {93, 'b'}, {94, 'B'}, {95, 'n'},
 	{96, 'm'}
 };
+
+InterceptionContext context;
+InterceptionDevice keyboard;
 
 std::tuple<int, bool> returnscancode(char key) {
 	for (const auto& entry : scanCodeMap) {
@@ -87,6 +87,7 @@ void keypress(char key, double start, double release) {
 	if (cv.wait_for(lock, std::chrono::milliseconds(starttick), [] { return muststop.load(); })) {
 		return;
 	}
+
 	bool shouldshift = false;
 	std::tuple<int, bool> keycodes = returnscancode(key);
 	shouldshift = get<1>(keycodes);
@@ -253,7 +254,6 @@ int main(int argc, char** argv) {
 			}
 		}
 	}
-
 	key.join();
 	interception_destroy_context(context);
 	return 0;
